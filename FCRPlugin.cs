@@ -38,7 +38,7 @@ namespace Rumi.FixCameraResolutions
                 logger?.LogWarning($"Failed to load config file\nSettings will be loaded with defaults!");
             }
 
-            logger?.LogInfo($"{nameof(PlayerControllerB)} Patch...");
+            logger?.LogInfo("Patch...");
 
             try
             {
@@ -47,7 +47,7 @@ namespace Rumi.FixCameraResolutions
             catch (Exception e)
             {
                 logger?.LogError(e);
-                logger?.LogError($"{nameof(PlayerControllerB)} Patch Fail!");
+                logger?.LogError("Patch Fail!");
             }
 
             logger?.LogInfo($"Plugin {modName} is loaded!");
