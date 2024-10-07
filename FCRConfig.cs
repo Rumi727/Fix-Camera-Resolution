@@ -62,13 +62,13 @@ namespace Rumi.FixCameraResolutions
             }
             catch (FileNotFoundException e)
             {
-                FCRPlugin.logger?.LogError(e);
-                FCRPlugin.logger?.LogWarning("Lethal Config Patch Fail! (This is not a bug and occurs when LethalConfig is not present)");
+                FCRPlugin.logger.LogError(e);
+                FCRPlugin.logger.LogWarning("Lethal Config Patch Fail! (This is not a bug and occurs when LethalConfig is not present)");
             }
             catch (Exception e)
             {
-                FCRPlugin.logger?.LogError(e);
-                FCRPlugin.logger?.LogError("Lethal Config Patch Fail!");
+                FCRPlugin.logger.LogError(e);
+                FCRPlugin.logger.LogError("Lethal Config Patch Fail!");
             }
         }
 

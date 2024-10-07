@@ -89,7 +89,7 @@ namespace Rumi.FixCameraResolutions
             renderTexture.width = targetWidth;
             renderTexture.height = targetHeight;
 
-            FCRPlugin.logger?.LogInfo($"Changed the size of the render texture to {targetWidth}x{targetHeight}");
+            FCRPlugin.logger.LogInfo($"Changed the size of the render texture to {targetWidth}x{targetHeight}");
         }
     }
 }

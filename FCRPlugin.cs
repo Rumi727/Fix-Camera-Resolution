@@ -13,7 +13,7 @@ namespace Rumi.FixCameraResolutions
         public const string modName = "FixCameraResolutions";
         public const string modVersion = "1.0.2";
 
-        public static ManualLogSource? logger { get; private set; }
+        internal static ManualLogSource logger { get; private set; } = null!;
         public static FCRConfig? config { get; private set; }
 
         public static Harmony harmony { get; } = new Harmony(modGuid);
@@ -22,9 +22,9 @@ namespace Rumi.FixCameraResolutions
         {
             logger = Logger;
 
-            logger?.LogInfo("Start loading plugin...");
+            logger.LogInfo("Start loading plugin...");
 
-            logger?.LogInfo("Config Loading...");
+            logger.LogInfo("Config Loading...");
 
             try
             {
@@ -34,11 +34,11 @@ namespace Rumi.FixCameraResolutions
             {
                 config = null;
 
-                logger?.LogError(e);
-                logger?.LogWarning($"Failed to load config file\nSettings will be loaded with defaults!");
+                logger.LogError(e);
+                logger.LogWarning($"Failed to load config file\nSettings will be loaded with defaults!");
             }
 
-            logger?.LogInfo("Patch...");
+            logger.LogInfo("Patch...");
 
             try
             {
@@ -46,11 +46,11 @@ namespace Rumi.FixCameraResolutions
             }
             catch (Exception e)
             {
-                logger?.LogError(e);
-                logger?.LogError("Patch Fail!");
+                logger.LogError(e);
+                logger.LogError("Patch Fail!");
             }
 
-            logger?.LogInfo($"Plugin {modName} is loaded!");
+            logger.LogInfo($"Plugin {modName} is loaded!");
         }
     }
 }
