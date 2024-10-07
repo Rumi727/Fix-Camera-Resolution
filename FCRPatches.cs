@@ -13,7 +13,7 @@ namespace Rumi.FixCameraResolutions
             RenderTexturePatch(__instance.playerScreenTexHighRes);
         }
 
-        public static void AllCameraPatch()
+        public static void AllTerminalPatch()
         {
             Terminal[] terminal = Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None);
             for (int i = 0; i < terminal.Length; i++)
