@@ -91,6 +91,8 @@ namespace Rumi.FixCameraResolutions
                 RequiresRestart = false,
                 CanModifyCallback = CanModifyAutoSize
             }));
+
+            LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("General", "Refresh resolution", "If the resolution has been released for some reason, you can refresh it using this button.", "Refresh", () => FCRPatches.AllTerminalPatch()));
         }
 
         static CanModifyResult CanModifyAutoSize() => (FCRPlugin.config?.autoSize ?? dAutoSize, "Since auto size is enabled, the size is automatically set to the current game window size.");
