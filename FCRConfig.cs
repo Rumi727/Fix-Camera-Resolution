@@ -75,8 +75,24 @@ namespace Rumi.FixCameraResolutions
         void LethalConfigPatch()
         {
             LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_autoSize, false));
-            LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_width, new IntSliderOptions() { Min = 1, Max = 3840, RequiresRestart = false }));
-            LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_height, new IntSliderOptions() { Min = 1, Max = 2160, RequiresRestart = false }));
+
+            LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_width, new IntSliderOptions()
+            {
+                Min = 1,
+                Max = 3840,
+                RequiresRestart = false,
+                CanModifyCallback = CanModifyAutoSize
+            }));
+
+            LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_height, new IntSliderOptions()
+            {
+                Min = 1,
+                Max = 2160,
+                RequiresRestart = false,
+                CanModifyCallback = CanModifyAutoSize
+            }));
         }
+
+        static CanModifyResult CanModifyAutoSize() => (FCRPlugin.config?.autoSize ?? dAutoSize, "Since auto size is enabled, the size is automatically set to the current game window size.");
     }
 }
