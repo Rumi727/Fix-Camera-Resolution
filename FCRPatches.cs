@@ -19,7 +19,7 @@ namespace Rumi.FixCameraResolutions
 
         public static void CameraPatch(Camera camera)
         {
-            RenderTexture targetTexture = camera.targetTexture;
+            RenderTexture? targetTexture = camera.targetTexture;
             if (targetTexture == null)
                 return;
 
