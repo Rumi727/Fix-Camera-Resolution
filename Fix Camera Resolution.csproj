@@ -29,6 +29,12 @@
     <Reference Include="Unity.Netcode.Runtime">
       <HintPath>dlls\Unity.Netcode.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.RenderPipelines.Core.Runtime">
+      <HintPath>dlls\Unity.RenderPipelines.Core.Runtime.dll</HintPath>
+    </Reference>
+    <Reference Include="Unity.RenderPipelines.HighDefinition.Runtime">
+      <HintPath>dlls\Unity.RenderPipelines.HighDefinition.Runtime.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine">
       <HintPath>dlls\UnityEngine.dll</HintPath>
     </Reference>

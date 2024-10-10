@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
+using Rumi.FixCameraResolutions.Fogs;
 using Rumi.FixCameraResolutions.Resolutions;
 
 namespace Rumi.FixCameraResolutions
@@ -15,6 +16,7 @@ namespace Rumi.FixCameraResolutions
         internal static ManualLogSource? logger { get; private set; } = null;
 
         public static FCRResConfig? resConfig { get; private set; }
+        public static FCRFogConfig? fogConfig { get; private set; }
 
         internal static Harmony harmony { get; } = new Harmony(modGuid);
 
@@ -25,6 +27,7 @@ namespace Rumi.FixCameraResolutions
             Debug.Log("Start loading plugin...");
 
             resConfig = FCRResConfig.Create(Config);
+            fogConfig = FCRFogConfig.Create(Config);
 
             Patch();
 
@@ -34,6 +37,7 @@ namespace Rumi.FixCameraResolutions
         public static void Repatch()
         {
             FCRResPatches.UpdateAllTerminal();
+            FCRFogPatches.UpdateAllVolume();
 
             Unpatch();
             Patch();
@@ -42,6 +46,7 @@ namespace Rumi.FixCameraResolutions
         static void Patch()
         {
             FCRResPatches.Patch();
+            FCRFogPatches.Patch();
         }
 
         static void Unpatch()
