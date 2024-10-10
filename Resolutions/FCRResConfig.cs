@@ -6,7 +6,7 @@ using System.IO;
 
 namespace Rumi.FixCameraResolutions.Resolutions
 {
-    public class FCRResConfig
+    public sealed class FCRResConfig
     {
         public bool enable
         {
