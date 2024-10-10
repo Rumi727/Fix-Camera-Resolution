@@ -62,7 +62,7 @@ namespace Rumi.FixCameraResolutions.Resolutions
 
         FCRResConfig(ConfigFile config)
         {
-            _enable = config.Bind("Resolutions", "Enable", dAutoSize, "When enabled, the camera resolution will be modified.");
+            _enable = config.Bind("Resolutions", "Enable", dEnable, "When enabled, the camera resolution will be modified.");
             _enable.SettingChanged += (sender, e) => FCRPlugin.Repatch();
 
             _autoSize = config.Bind("Resolutions", "Auto Size", dAutoSize, "When enabled, sets the camera size to the size of the current game window.");
@@ -119,6 +119,8 @@ namespace Rumi.FixCameraResolutions.Resolutions
 
         void LethalConfigPatch()
         {
+            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_enable, false));
+
             LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_autoSize, new BoolCheckBoxOptions()
             {
                 RequiresRestart = false,
