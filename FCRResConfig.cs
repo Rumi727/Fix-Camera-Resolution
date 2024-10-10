@@ -7,45 +7,33 @@ using System;
 
 namespace Rumi.FixCameraResolutions
 {
-    public readonly struct FCRResConfig
+    public class FCRResConfig
     {
         public bool autoSize
         {
-            get => _autoSize?.Value ?? dAutoSize;
-            set
-            {
-                if (_autoSize != null)
-                    _autoSize.Value = value;
-            }
+            get => _autoSize.Value;
+            set => _autoSize.Value = value;
         }
-        readonly ConfigEntry<bool>? _autoSize;
+        readonly ConfigEntry<bool> _autoSize;
         public const bool dAutoSize = true;
 
         public int width
         {
-            get => _width?.Value ?? dWidth;
-            set
-            {
-                if (_width != null)
-                    _width.Value = value;
-            }
+            get => _width.Value;
+            set => _width.Value = value;
         }
-        readonly ConfigEntry<int>? _width;
+        readonly ConfigEntry<int> _width;
         public const int dWidth = 1920;
 
         public int height
         {
-            get => _height?.Value ?? dHeight;
-            set
-            {
-                if (_height != null)
-                    _height.Value = value;
-            }
+            get => _height.Value;
+            set => _height.Value = value;
         }
-        readonly ConfigEntry<int>? _height;
+        readonly ConfigEntry<int> _height;
         public const int dHeight = 1080;
 
-        public FCRResConfig(ConfigFile config)
+        internal FCRResConfig(ConfigFile config)
         {
             _autoSize = config.Bind("Resolutions", "Auto Size", dAutoSize, "When activated, sets the camera size to the size of the current game window.");
             _autoSize.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
@@ -73,16 +61,28 @@ namespace Rumi.FixCameraResolutions
 
             #region ~ 1.0.2 호환성
             {
-                if (config.TryGetEntry<bool>("General", "Auto Size", out var entry))
+                ConfigDefinition configDefinition = new ConfigDefinition("General", "Auto Size");
+                if (config.TryGetEntry<bool>(configDefinition, out var entry))
+                {
                     _autoSize.Value = entry.Value;
+                    config.Remove(configDefinition);
+                }
             }
             {
-                if (config.TryGetEntry<int>("General", "Width", out var entry))
+                ConfigDefinition configDefinition = new ConfigDefinition("General", "Width");
+                if (config.TryGetEntry<int>(configDefinition, out var entry))
+                { 
                     _width.Value = entry.Value;
+                    config.Remove(configDefinition);
+                }
             }
             {
-                if (config.TryGetEntry<int>("General", "Height", out var entry))
+                ConfigDefinition configDefinition = new ConfigDefinition("General", "Height");
+                if (config.TryGetEntry<int>(configDefinition, out var entry))
+                {
                     _height.Value = entry.Value;
+                    config.Remove(configDefinition);
+                }
             }
             #endregion
         }
