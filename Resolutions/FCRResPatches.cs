@@ -1,7 +1,7 @@
 ﻿using HarmonyLib;
 using UnityEngine;
 
-namespace Rumi.FixCameraResolutions
+namespace Rumi.FixCameraResolutions.Resolutions
 {
     public static class FCRResPatches
     {

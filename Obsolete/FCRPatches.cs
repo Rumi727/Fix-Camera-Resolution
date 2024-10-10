@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Rumi.FixCameraResolutions.Resolutions;
+using System;
 using UnityEngine;
 
 #pragma warning disable IDE0130 // 네임스페이스가 폴더 구조와 일치하지 않습니다.

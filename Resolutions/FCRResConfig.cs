@@ -1,10 +1,10 @@
 ﻿using BepInEx.Configuration;
-using LethalConfig.ConfigItems.Options;
-using LethalConfig.ConfigItems;
 using LethalConfig;
+using LethalConfig.ConfigItems;
+using LethalConfig.ConfigItems.Options;
 using System.IO;
 
-namespace Rumi.FixCameraResolutions
+namespace Rumi.FixCameraResolutions.Resolutions
 {
     public class FCRResConfig
     {
@@ -101,7 +101,7 @@ namespace Rumi.FixCameraResolutions
             {
                 ConfigDefinition configDefinition = new ConfigDefinition("General", "Width");
                 if (config.TryGetEntry<int>(configDefinition, out var entry))
-                { 
+                {
                     _width.Value = entry.Value;
                     config.Remove(configDefinition);
                 }
