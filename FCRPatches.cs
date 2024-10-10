@@ -3,16 +3,16 @@ using UnityEngine;
 
 namespace Rumi.FixCameraResolutions
 {
-    public class FCRPatches
+    public static class FCRPatches
     {
         public static int width
         {
             get
             {
-                if (FCRPlugin.config?.autoSize ?? FCRConfig.dAutoSize)
+                if (FCRPlugin.resConfig?.autoSize ?? FCRResConfig.dAutoSize)
                     return Screen.width;
                 else
-                    return FCRPlugin.config?.width ?? FCRConfig.dWidth;
+                    return FCRPlugin.resConfig?.width ?? FCRResConfig.dWidth;
             }
         }
 
@@ -20,10 +20,10 @@ namespace Rumi.FixCameraResolutions
         {
             get
             {
-                if (FCRPlugin.config?.autoSize ?? FCRConfig.dAutoSize)
+                if (FCRPlugin.resConfig?.autoSize ?? FCRResConfig.dAutoSize)
                     return Screen.height;
                 else
-                    return FCRPlugin.config?.height ?? FCRConfig.dHeight;
+                    return FCRPlugin.resConfig?.height ?? FCRResConfig.dHeight;
             }
         }
 
@@ -78,7 +78,7 @@ namespace Rumi.FixCameraResolutions
             renderTexture.width = targetWidth;
             renderTexture.height = targetHeight;
 
-            FCRPlugin.logger.LogInfo($"Changed the size of the render texture to {targetWidth}x{targetHeight}");
+            Debug.Log($"Changed the size of the render texture to {targetWidth}x{targetHeight}");
         }
     }
 }

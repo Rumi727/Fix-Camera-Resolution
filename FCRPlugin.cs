@@ -1,6 +1,5 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
-using GameNetcodeStuff;
 using HarmonyLib;
 using System;
 
@@ -13,8 +12,9 @@ namespace Rumi.FixCameraResolutions
         public const string modName = "FixCameraResolutions";
         public const string modVersion = "1.0.2";
 
-        internal static ManualLogSource logger { get; private set; } = null!;
-        public static FCRConfig? config { get; private set; }
+        internal static ManualLogSource? logger { get; private set; } = null;
+
+        public static FCRResConfig? resConfig { get; private set; }
 
         public static Harmony harmony { get; } = new Harmony(modGuid);
 
@@ -22,23 +22,21 @@ namespace Rumi.FixCameraResolutions
         {
             logger = Logger;
 
-            logger.LogInfo("Start loading plugin...");
+            Debug.Log("Start loading plugin...");
 
-            logger.LogInfo("Config Loading...");
+            Debug.Log("Config Loading...");
 
             try
             {
-                config = new FCRConfig(Config);
+                resConfig = new FCRResConfig(Config);
             }
             catch (Exception e)
             {
-                config = null;
-
-                logger.LogError(e);
-                logger.LogWarning($"Failed to load config file\nSettings will be loaded with defaults!");
+                Debug.LogError(e);
+                Debug.LogWarning($"Failed to load config file\nSettings will be loaded with defaults!");
             }
 
-            logger.LogInfo("Patch...");
+            Debug.Log("Resolution Patch...");
 
             try
             {
@@ -46,11 +44,17 @@ namespace Rumi.FixCameraResolutions
             }
             catch (Exception e)
             {
-                logger.LogError(e);
-                logger.LogError("Patch Fail!");
+                Debug.LogError(e);
+                Debug.LogError("Resolution Patch Fail!");
             }
 
-            logger.LogInfo($"Plugin {modName} is loaded!");
+            Debug.Log($"Plugin {modName} is loaded!");
         }
+
+
+
+        #region Obsolete
+        [Obsolete("Deprecated class name! Please use FCRResConfig", true)] public static FCRConfig config => throw new NotImplementedException();
+        #endregion
     }
 }
