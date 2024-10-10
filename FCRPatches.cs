@@ -70,19 +70,8 @@ namespace Rumi.FixCameraResolutions
 
         public static void RenderTexturePatch(RenderTexture renderTexture)
         {
-            int targetWidth;
-            int targetHeight;
-
-            if (FCRPlugin.config?.autoSize ?? FCRConfig.dAutoSize)
-            {
-                targetWidth = Screen.width;
-                targetHeight = Screen.height;
-            }
-            else
-            {
-                targetWidth = FCRPlugin.config?.width ?? FCRConfig.dWidth;
-                targetHeight = FCRPlugin.config?.height ?? FCRConfig.dHeight;
-            }
+            int targetWidth = width;
+            int targetHeight = height;
 
             renderTexture.Release();
 
