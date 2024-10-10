@@ -54,14 +54,14 @@ namespace Rumi.FixCameraResolutions.Fogs
                     if (alwaysUpdate)
                         FCRPlugin.harmony.PatchAll(typeof(UpdatePatch));
                 }
+
+                Debug.Log("Fog Patched!");
             }
             catch (System.Exception e)
             {
                 Debug.LogError(e);
                 Debug.LogError("Fog Patch Fail!");
             }
-
-            Debug.Log("Fog Patched!");
         }
     }
 }

@@ -105,14 +105,13 @@ namespace Rumi.FixCameraResolutions.Resolutions
             try
             {
                 FCRPlugin.harmony.PatchAll(typeof(FCRResPatches));
+                Debug.Log("Resolution Patched!");
             }
             catch (System.Exception e)
             {
                 Debug.LogError(e);
                 Debug.LogError("Resolution Patch Fail!");
             }
-
-            Debug.Log("Resolution Patched!");
         }
     }
 }
