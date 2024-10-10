@@ -65,13 +65,13 @@ namespace Rumi.FixCameraResolutions.Resolutions
             _enable.SettingChanged += (sender, e) => FCRPlugin.Repatch();
 
             _autoSize = config.Bind("Resolutions", "Auto Size", dAutoSize, "When enabled, sets the camera size to the size of the current game window.");
-            _autoSize.SettingChanged += (sender, e) => FCRResPatches.UpdateAllTerminal();
+            _autoSize.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
 
             _width = config.Bind("Resolutions", "Width", dWidth);
-            _width.SettingChanged += (sender, e) => FCRResPatches.UpdateAllTerminal();
+            _width.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
 
             _height = config.Bind("Resolutions", "Height", dHeight);
-            _height.SettingChanged += (sender, e) => FCRResPatches.UpdateAllTerminal();
+            _height.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
 
             try
             {

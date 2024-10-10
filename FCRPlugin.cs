@@ -39,7 +39,7 @@ namespace Rumi.FixCameraResolutions
 
         public static void Repatch()
         {
-            FCRResPatches.UpdateAllTerminal();
+            FCRResPatches.UpdateAll();
             FCRFogPatches.UpdateAllVolume();
             FCRVisorPatches.UpdateAllPlayer();
 

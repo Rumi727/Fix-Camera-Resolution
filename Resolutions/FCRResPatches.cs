@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using GameNetcodeStuff;
+using HarmonyLib;
 using UnityEngine;
 
 namespace Rumi.FixCameraResolutions.Resolutions
@@ -73,6 +74,12 @@ namespace Rumi.FixCameraResolutions.Resolutions
             }
         }
 
+        public static void UpdateAll()
+        {
+            UpdateAllTerminal();
+            UpdateAllPlayerCamera();
+        }
+
         public static void UpdateAllTerminal()
         {
             Terminal[] terminals = Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None);
@@ -94,6 +101,15 @@ namespace Rumi.FixCameraResolutions.Resolutions
 
             Debug.Log($"Changed the size of the render texture to {renderTexture.width}x{renderTexture.height}");
         }
+
+        public static void UpdateAllPlayerCamera()
+        {
+            PlayerControllerB[] players = Object.FindObjectsByType<PlayerControllerB>(FindObjectsSortMode.None);
+            for (int i = 0; i < players.Length; i++)
+                UpdateCamera(players[i].gameplayCamera);
+        }
+
+        public static void UpdateCamera(Camera camera) => camera.ResetAspect();
 
         internal static void Patch()
         {
