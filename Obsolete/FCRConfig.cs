@@ -46,7 +46,7 @@ namespace Rumi.FixCameraResolutions
         }
         [Obsolete("Deprecated class name! Please use FCRResConfig.dHeight")] public const int dHeight = 1080;
 
-        [Obsolete("Deprecated class name! Please use FCRResConfig")] public FCRConfig(ConfigFile config) => this.config = new FCRResConfig(config);
+        [Obsolete("Deprecated class name! Please use FCRResConfig", true)] public FCRConfig(ConfigFile config) => throw new NotImplementedException();
         internal FCRConfig(FCRResConfig? config) => this.config = config;
     }
 }

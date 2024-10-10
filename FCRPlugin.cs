@@ -1,7 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Logging;
 using HarmonyLib;
-using System;
 
 namespace Rumi.FixCameraResolutions
 {
@@ -16,7 +15,7 @@ namespace Rumi.FixCameraResolutions
 
         public static FCRResConfig? resConfig { get; private set; }
 
-        public static Harmony harmony { get; } = new Harmony(modGuid);
+        internal static Harmony harmony { get; } = new Harmony(modGuid);
 
         void Awake()
         {
@@ -24,37 +23,47 @@ namespace Rumi.FixCameraResolutions
 
             Debug.Log("Start loading plugin...");
 
-            Debug.Log("Config Loading...");
+            resConfig = FCRResConfig.Create(Config);
 
-            try
-            {
-                resConfig = new FCRResConfig(Config);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                Debug.LogWarning($"Failed to load config file\nSettings will be loaded with defaults!");
-            }
-
-            Debug.Log("Resolution Patch...");
-
-            try
-            {
-                harmony.PatchAll(typeof(FCRResPatches));
-            }
-            catch (Exception e)
-            {
-                Debug.LogError(e);
-                Debug.LogError("Resolution Patch Fail!");
-            }
+            Patch();
 
             Debug.Log($"Plugin {modName} is loaded!");
+        }
+
+        public static void Repatch()
+        {
+            FCRResPatches.UpdateAllTerminal();
+
+            Unpatch();
+            Patch();
+        }
+
+        static void Patch()
+        {
+            FCRResPatches.Patch();
+        }
+
+        static void Unpatch()
+        {
+            Debug.Log("Unpatch...");
+
+            try
+            {
+                harmony.UnpatchSelf();
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                Debug.LogError("Unpatch Fail!");
+            }
+
+            Debug.Log("Unpatched!");
         }
 
 
 
         #region Obsolete
-        [Obsolete("Deprecated class name! Please use FCRResConfig")] public static FCRConfig config => new FCRConfig(resConfig);
+        [System.Obsolete("Deprecated class name! Please use FCRResConfig")] public static FCRConfig config => new FCRConfig(resConfig);
         #endregion
     }
 }

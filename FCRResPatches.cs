@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using System;
 using UnityEngine;
 
 namespace Rumi.FixCameraResolutions
@@ -52,8 +51,8 @@ namespace Rumi.FixCameraResolutions
         [HarmonyPostfix]
         static void Terminal_Start_Postfix(Terminal __instance)
         {
-            RenderTexturePatch(__instance.playerScreenTex);
-            RenderTexturePatch(__instance.playerScreenTexHighRes);
+            UpdateRenderTexture(__instance.playerScreenTex);
+            UpdateRenderTexture(__instance.playerScreenTexHighRes);
         }
 
         //스캔 노드 위치 버그 수정
@@ -74,19 +73,19 @@ namespace Rumi.FixCameraResolutions
             }
         }
 
-        public static void AllTerminalPatch()
+        public static void UpdateAllTerminal()
         {
             Terminal[] terminals = Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None);
             for (int i = 0; i < terminals.Length; i++)
             {
                 Terminal terminal = terminals[i];
 
-                RenderTexturePatch(terminal.playerScreenTex);
-                RenderTexturePatch(terminal.playerScreenTexHighRes);
+                UpdateRenderTexture(terminal.playerScreenTex);
+                UpdateRenderTexture(terminal.playerScreenTexHighRes);
             }
         }
 
-        public static void RenderTexturePatch(RenderTexture renderTexture)
+        public static void UpdateRenderTexture(RenderTexture renderTexture)
         {
             renderTexture.Release();
 
@@ -98,13 +97,16 @@ namespace Rumi.FixCameraResolutions
 
         public static void Patch()
         {
+            if (!enable)
+                return;
+
             Debug.Log("Resolution Patch...");
 
             try
             {
                 FCRPlugin.harmony.PatchAll(typeof(FCRResPatches));
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 Debug.LogError(e);
                 Debug.LogError("Resolution Patch Fail!");

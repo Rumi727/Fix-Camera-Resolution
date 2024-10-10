@@ -3,7 +3,6 @@ using LethalConfig.ConfigItems.Options;
 using LethalConfig.ConfigItems;
 using LethalConfig;
 using System.IO;
-using System;
 
 namespace Rumi.FixCameraResolutions
 {
@@ -41,19 +40,39 @@ namespace Rumi.FixCameraResolutions
         readonly ConfigEntry<int> _height;
         public const int dHeight = 1080;
 
-        internal FCRResConfig(ConfigFile config)
+        internal static FCRResConfig? Create(ConfigFile config)
+        {
+            Debug.Log("Resolution Config Loading...");
+
+            try
+            {
+                var result = new FCRResConfig(config);
+                Debug.Log("Resolution Config Loaded!");
+
+                return result;
+            }
+            catch (System.Exception e)
+            {
+                Debug.LogError(e);
+                Debug.LogWarning($"Failed to load config file\nSettings will be loaded with defaults!");
+            }
+
+            return null;
+        }
+
+        FCRResConfig(ConfigFile config)
         {
             _enable = config.Bind("Resolutions", "Enable", dAutoSize, "When enabled, the camera resolution will be modified.");
-            _enable.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
+            _enable.SettingChanged += (sender, e) => FCRPlugin.Repatch();
 
             _autoSize = config.Bind("Resolutions", "Auto Size", dAutoSize, "When enabled, sets the camera size to the size of the current game window.");
-            _autoSize.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
+            _autoSize.SettingChanged += (sender, e) => FCRResPatches.UpdateAllTerminal();
 
             _width = config.Bind("Resolutions", "Width", dWidth);
-            _width.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
+            _width.SettingChanged += (sender, e) => FCRResPatches.UpdateAllTerminal();
 
             _height = config.Bind("Resolutions", "Height", dHeight);
-            _height.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
+            _height.SettingChanged += (sender, e) => FCRResPatches.UpdateAllTerminal();
 
             try
             {
@@ -64,7 +83,7 @@ namespace Rumi.FixCameraResolutions
                 Debug.LogError(e);
                 Debug.LogWarning("Lethal Config Patch Fail! (This is not a bug and occurs when LethalConfig is not present)");
             }
-            catch (Exception e)
+            catch (System.Exception e)
             {
                 Debug.LogError(e);
                 Debug.LogError("Lethal Config Patch Fail!");
@@ -122,7 +141,7 @@ namespace Rumi.FixCameraResolutions
                 CanModifyCallback = CanModifySize
             }));
 
-            LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("Resolutions", "Refresh resolution", "If the resolution has been released for some reason, you can refresh it using this button.", "Refresh", () => FCRResPatches.AllTerminalPatch()));
+            LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("Resolutions", "Refresh resolution", "If the resolution has been released for some reason, you can refresh it using this button.", "Refresh", () => FCRResPatches.UpdateAllTerminal()));
         }
 
         static CanModifyResult CanModifyAutoSize() => (FCRPlugin.resConfig?.enable ?? dEnable, "Resolution patch is disabled and cannot be modified");

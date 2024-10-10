@@ -15,8 +15,8 @@ namespace Rumi.FixCameraResolutions
         [Obsolete("Deprecated class name! Please use FCRResPatches.orgWidth")] public static int? orgWidth => FCRResPatches.orgWidth;
         [Obsolete("Deprecated class name! Please use FCRResPatches.orgHeight")] public static int? orgHeight => FCRResPatches.orgHeight;
 
-        [Obsolete("Deprecated class name! Please use FCRResPatches.AllTerminalPatch")] public static void AllTerminalPatch() => FCRResPatches.AllTerminalPatch();
+        [Obsolete("Deprecated class name! Please use FCRResPatches.AllTerminalPatch")] public static void AllTerminalPatch() => FCRResPatches.UpdateAllTerminal();
 
-        [Obsolete("Deprecated class name! Please use FCRResPatches.RenderTexturePatch")] public static void RenderTexturePatch(RenderTexture renderTexture) => FCRResPatches.RenderTexturePatch(renderTexture);
+        [Obsolete("Deprecated class name! Please use FCRResPatches.RenderTexturePatch")] public static void RenderTexturePatch(RenderTexture renderTexture) => FCRResPatches.UpdateRenderTexture(renderTexture);
     }
 }
