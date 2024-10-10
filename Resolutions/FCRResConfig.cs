@@ -2,7 +2,6 @@
 using LethalConfig;
 using LethalConfig.ConfigItems;
 using LethalConfig.ConfigItems.Options;
-using System.IO;
 
 namespace Rumi.FixCameraResolutions.Resolutions
 {
@@ -78,15 +77,15 @@ namespace Rumi.FixCameraResolutions.Resolutions
             {
                 LethalConfigPatch();
             }
-            catch (FileNotFoundException e)
+            catch (System.IO.FileNotFoundException e)
             {
                 Debug.LogError(e);
-                Debug.LogWarning("Lethal Config Patch Fail! (This is not a bug and occurs when LethalConfig is not present)");
+                Debug.LogWarning("Lethal Config Add Fail! (This is not a bug and occurs when LethalConfig is not present)");
             }
             catch (System.Exception e)
             {
                 Debug.LogError(e);
-                Debug.LogError("Lethal Config Patch Fail!");
+                Debug.LogError("Lethal Config Add Fail!");
             }
 
             #region ~ 1.0.2 호환성
