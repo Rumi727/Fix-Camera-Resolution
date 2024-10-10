@@ -87,33 +87,6 @@ namespace Rumi.FixCameraResolutions.Resolutions
                 Debug.LogError(e);
                 Debug.LogError("Lethal Config Add Fail!");
             }
-
-            #region ~ 1.0.2 호환성
-            {
-                ConfigDefinition configDefinition = new ConfigDefinition("General", "Auto Size");
-                if (config.TryGetEntry<bool>(configDefinition, out var entry))
-                {
-                    _autoSize.Value = entry.Value;
-                    config.Remove(configDefinition);
-                }
-            }
-            {
-                ConfigDefinition configDefinition = new ConfigDefinition("General", "Width");
-                if (config.TryGetEntry<int>(configDefinition, out var entry))
-                {
-                    _width.Value = entry.Value;
-                    config.Remove(configDefinition);
-                }
-            }
-            {
-                ConfigDefinition configDefinition = new ConfigDefinition("General", "Height");
-                if (config.TryGetEntry<int>(configDefinition, out var entry))
-                {
-                    _height.Value = entry.Value;
-                    config.Remove(configDefinition);
-                }
-            }
-            #endregion
         }
 
         void LethalConfigPatch()
