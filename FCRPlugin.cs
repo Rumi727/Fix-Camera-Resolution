@@ -3,6 +3,7 @@ using BepInEx.Logging;
 using HarmonyLib;
 using Rumi.FixCameraResolutions.Fogs;
 using Rumi.FixCameraResolutions.Resolutions;
+using Rumi.FixCameraResolutions.Visors;
 
 namespace Rumi.FixCameraResolutions
 {
@@ -17,6 +18,7 @@ namespace Rumi.FixCameraResolutions
 
         public static FCRResConfig? resConfig { get; private set; }
         public static FCRFogConfig? fogConfig { get; private set; }
+        public static FCRVisorConfig? visorConfig { get; private set; }
 
         internal static Harmony harmony { get; } = new Harmony(modGuid);
 
@@ -28,6 +30,7 @@ namespace Rumi.FixCameraResolutions
 
             resConfig = FCRResConfig.Create(Config);
             fogConfig = FCRFogConfig.Create(Config);
+            visorConfig = FCRVisorConfig.Create(Config);
 
             Patch();
 
@@ -38,6 +41,7 @@ namespace Rumi.FixCameraResolutions
         {
             FCRResPatches.UpdateAllTerminal();
             FCRFogPatches.UpdateAllVolume();
+            FCRVisorPatches.UpdateAllPlayer();
 
             Unpatch();
             Patch();
@@ -47,6 +51,7 @@ namespace Rumi.FixCameraResolutions
         {
             FCRResPatches.Patch();
             FCRFogPatches.Patch();
+            FCRVisorPatches.Patch();
         }
 
         static void Unpatch()

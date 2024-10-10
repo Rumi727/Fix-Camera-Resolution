@@ -2,3 +2,6 @@
 
 # IDE0051: 사용되지 않는 private 멤버 제거
 dotnet_diagnostic.IDE0051.severity = none
+
+# IDE0031: Null 전파 사용
+dotnet_diagnostic.IDE0031.severity = none
