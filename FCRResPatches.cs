@@ -1,18 +1,29 @@
 ﻿using HarmonyLib;
+using System;
 using UnityEngine;
 
 namespace Rumi.FixCameraResolutions
 {
     public static class FCRResPatches
     {
+        public static bool enable => FCRPlugin.resConfig?.enable ?? FCRResConfig.dEnable;
+
+        /// <summary>
+        /// orgWidth
+        /// </summary>
         public static int width
         {
             get
             {
-                if (FCRPlugin.resConfig?.autoSize ?? FCRResConfig.dAutoSize)
-                    return Screen.width;
+                if (enable)
+                {
+                    if (FCRPlugin.resConfig?.autoSize ?? FCRResConfig.dAutoSize)
+                        return Screen.width;
+                    else
+                        return FCRPlugin.resConfig?.width ?? FCRResConfig.dWidth;
+                }
                 else
-                    return FCRPlugin.resConfig?.width ?? FCRResConfig.dWidth;
+                    return orgWidth;
             }
         }
 
@@ -20,15 +31,20 @@ namespace Rumi.FixCameraResolutions
         {
             get
             {
-                if (FCRPlugin.resConfig?.autoSize ?? FCRResConfig.dAutoSize)
-                    return Screen.height;
+                if (enable)
+                {
+                    if (FCRPlugin.resConfig?.autoSize ?? FCRResConfig.dAutoSize)
+                        return Screen.height;
+                    else
+                        return FCRPlugin.resConfig?.height ?? FCRResConfig.dHeight;
+                }
                 else
-                    return FCRPlugin.resConfig?.height ?? FCRResConfig.dHeight;
+                    return orgHeight;
             }
         }
 
-        public static int? orgWidth { get; private set; }
-        public static int? orgHeight { get; private set; }
+        public const int orgWidth = 860;
+        public const int orgHeight = 520;
 
 
 
@@ -36,9 +52,6 @@ namespace Rumi.FixCameraResolutions
         [HarmonyPostfix]
         static void Terminal_Start_Postfix(Terminal __instance)
         {
-            orgWidth ??= __instance.playerScreenTex.width;
-            orgHeight ??= __instance.playerScreenTex.height;
-
             RenderTexturePatch(__instance.playerScreenTex);
             RenderTexturePatch(__instance.playerScreenTexHighRes);
         }
@@ -48,37 +61,56 @@ namespace Rumi.FixCameraResolutions
         [HarmonyPostfix]
         static void HUDManager_UpdateScanNodes_Postfix(HUDManager __instance)
         {
+            if (!enable)
+                return;
+
             for (int i = 0; i < __instance.scanElements.Length; i++)
             {
                 RectTransform scanElement = __instance.scanElements[i];
 
                 scanElement.anchoredPosition += new Vector2(439.48f, 244.8f);
-                scanElement.anchoredPosition = scanElement.anchoredPosition.Multiply((orgWidth / (float)width) ?? 1f, (orgHeight / (float)height) ?? 1);
+                scanElement.anchoredPosition = scanElement.anchoredPosition.Multiply((float)orgWidth / width, (float)orgHeight / height);
                 scanElement.anchoredPosition -= new Vector2(439.48f, 244.8f);
             }
         }
 
         public static void AllTerminalPatch()
         {
-            Terminal[] terminal = Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None);
-            for (int i = 0; i < terminal.Length; i++)
+            Terminal[] terminals = Object.FindObjectsByType<Terminal>(FindObjectsSortMode.None);
+            for (int i = 0; i < terminals.Length; i++)
             {
-                RenderTexturePatch(terminal[i].playerScreenTex);
-                RenderTexturePatch(terminal[i].playerScreenTexHighRes);
+                Terminal terminal = terminals[i];
+
+                RenderTexturePatch(terminal.playerScreenTex);
+                RenderTexturePatch(terminal.playerScreenTexHighRes);
             }
         }
 
         public static void RenderTexturePatch(RenderTexture renderTexture)
         {
-            int targetWidth = width;
-            int targetHeight = height;
-
             renderTexture.Release();
 
-            renderTexture.width = targetWidth;
-            renderTexture.height = targetHeight;
+            renderTexture.width = width;
+            renderTexture.height = height;
 
-            Debug.Log($"Changed the size of the render texture to {targetWidth}x{targetHeight}");
+            Debug.Log($"Changed the size of the render texture to {renderTexture.width}x{renderTexture.height}");
+        }
+
+        public static void Patch()
+        {
+            Debug.Log("Resolution Patch...");
+
+            try
+            {
+                FCRPlugin.harmony.PatchAll(typeof(FCRResPatches));
+            }
+            catch (Exception e)
+            {
+                Debug.LogError(e);
+                Debug.LogError("Resolution Patch Fail!");
+            }
+
+            Debug.Log("Resolution Patched!");
         }
     }
 }

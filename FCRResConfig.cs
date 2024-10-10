@@ -9,6 +9,14 @@ namespace Rumi.FixCameraResolutions
 {
     public class FCRResConfig
     {
+        public bool enable
+        {
+            get => _enable.Value;
+            set => _enable.Value = value;
+        }
+        readonly ConfigEntry<bool> _enable;
+        public const bool dEnable = true;
+
         public bool autoSize
         {
             get => _autoSize.Value;
@@ -35,7 +43,10 @@ namespace Rumi.FixCameraResolutions
 
         internal FCRResConfig(ConfigFile config)
         {
-            _autoSize = config.Bind("Resolutions", "Auto Size", dAutoSize, "When activated, sets the camera size to the size of the current game window.");
+            _enable = config.Bind("Resolutions", "Enable", dAutoSize, "When enabled, the camera resolution will be modified.");
+            _enable.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
+
+            _autoSize = config.Bind("Resolutions", "Auto Size", dAutoSize, "When enabled, sets the camera size to the size of the current game window.");
             _autoSize.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
 
             _width = config.Bind("Resolutions", "Width", dWidth);
@@ -89,14 +100,18 @@ namespace Rumi.FixCameraResolutions
 
         void LethalConfigPatch()
         {
-            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_autoSize, false));
+            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_autoSize, new BoolCheckBoxOptions()
+            {
+                RequiresRestart = false,
+                CanModifyCallback = CanModifyAutoSize
+            }));
 
             LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_width, new IntSliderOptions()
             {
                 Min = 1,
                 Max = 3840,
                 RequiresRestart = false,
-                CanModifyCallback = CanModifyAutoSize
+                CanModifyCallback = CanModifySize
             }));
 
             LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_height, new IntSliderOptions()
@@ -104,12 +119,17 @@ namespace Rumi.FixCameraResolutions
                 Min = 1,
                 Max = 2160,
                 RequiresRestart = false,
-                CanModifyCallback = CanModifyAutoSize
+                CanModifyCallback = CanModifySize
             }));
 
             LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("Resolutions", "Refresh resolution", "If the resolution has been released for some reason, you can refresh it using this button.", "Refresh", () => FCRResPatches.AllTerminalPatch()));
         }
 
-        static CanModifyResult CanModifyAutoSize() => (!FCRPlugin.resConfig?.autoSize ?? dAutoSize, "Since auto size is enabled, the size is automatically set to the current game window size.");
+        static CanModifyResult CanModifyAutoSize() => (FCRPlugin.resConfig?.enable ?? dEnable, "Resolution patch is disabled and cannot be modified");
+        static CanModifyResult CanModifySize()
+        {
+            var result = CanModifyAutoSize();
+            return !result ? result : (!(FCRPlugin.resConfig?.autoSize ?? dAutoSize), "Since auto size is enabled, the size is automatically set to the current game window size.");
+        }
     }
 }
