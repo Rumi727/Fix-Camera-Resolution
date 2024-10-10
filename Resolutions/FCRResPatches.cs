@@ -95,7 +95,7 @@ namespace Rumi.FixCameraResolutions.Resolutions
             Debug.Log($"Changed the size of the render texture to {renderTexture.width}x{renderTexture.height}");
         }
 
-        public static void Patch()
+        internal static void Patch()
         {
             if (!enable)
                 return;
