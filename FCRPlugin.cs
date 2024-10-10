@@ -54,7 +54,7 @@ namespace Rumi.FixCameraResolutions
 
 
         #region Obsolete
-        [Obsolete("Deprecated class name! Please use FCRResConfig", true)] public static FCRConfig config => throw new NotImplementedException();
+        [Obsolete("Deprecated class name! Please use FCRResConfig")] public static FCRConfig config => new FCRConfig(resConfig);
         #endregion
     }
 }
