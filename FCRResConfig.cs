@@ -48,13 +48,13 @@ namespace Rumi.FixCameraResolutions
         public FCRResConfig(ConfigFile config)
         {
             _autoSize = config.Bind("Resolutions", "Auto Size", dAutoSize, "When activated, sets the camera size to the size of the current game window.");
-            _autoSize.SettingChanged += (sender, e) => FCRPatches.AllTerminalPatch();
+            _autoSize.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
 
             _width = config.Bind("Resolutions", "Width", dWidth);
-            _width.SettingChanged += (sender, e) => FCRPatches.AllTerminalPatch();
+            _width.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
 
             _height = config.Bind("Resolutions", "Height", dHeight);
-            _height.SettingChanged += (sender, e) => FCRPatches.AllTerminalPatch();
+            _height.SettingChanged += (sender, e) => FCRResPatches.AllTerminalPatch();
 
             try
             {
@@ -107,7 +107,7 @@ namespace Rumi.FixCameraResolutions
                 CanModifyCallback = CanModifyAutoSize
             }));
 
-            LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("Resolutions", "Refresh resolution", "If the resolution has been released for some reason, you can refresh it using this button.", "Refresh", () => FCRPatches.AllTerminalPatch()));
+            LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("Resolutions", "Refresh resolution", "If the resolution has been released for some reason, you can refresh it using this button.", "Refresh", () => FCRResPatches.AllTerminalPatch()));
         }
 
         static CanModifyResult CanModifyAutoSize() => (!FCRPlugin.resConfig?.autoSize ?? dAutoSize, "Since auto size is enabled, the size is automatically set to the current game window size.");

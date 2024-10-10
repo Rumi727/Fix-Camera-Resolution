@@ -40,7 +40,7 @@ namespace Rumi.FixCameraResolutions
 
             try
             {
-                harmony.PatchAll(typeof(FCRPatches));
+                harmony.PatchAll(typeof(FCRResPatches));
             }
             catch (Exception e)
             {

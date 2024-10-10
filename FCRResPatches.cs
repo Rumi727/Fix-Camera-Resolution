@@ -3,7 +3,7 @@ using UnityEngine;
 
 namespace Rumi.FixCameraResolutions
 {
-    public static class FCRPatches
+    public static class FCRResPatches
     {
         public static int width
         {
