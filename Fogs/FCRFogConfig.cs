@@ -69,7 +69,7 @@ namespace Rumi.FixCameraResolutions.Fogs
 
         void LethalConfigPatch()
         {
-            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_disable));
+            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_disable, false));
             LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_alwaysUpdate, new BoolCheckBoxOptions()
             {
                 RequiresRestart = false,

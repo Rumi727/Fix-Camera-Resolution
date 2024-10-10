@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
@@ -10,13 +11,14 @@ namespace Rumi.FixCameraResolutions.Fogs
         [HarmonyPatch(typeof(Volume))]
         static class OnEnablePatch
         {
-            [HarmonyPostfix] static void OnEnable(Volume __instance) => UpdateVolume(__instance);
+            [HarmonyPatch("OnEnable"), HarmonyPostfix]
+            static void OnEnable(Volume __instance) => __instance.StartCoroutine(UpdateVolume(__instance));
         }
 
         [HarmonyPatch(typeof(Volume))]
         static class UpdatePatch
         {
-            [HarmonyPostfix] static void Update(Volume __instance) => UpdateVolume(__instance);
+            [HarmonyPatch("Update"), HarmonyPostfix] static void Update(Volume __instance) => UpdateVolume(__instance);
         }
 
         public static bool disable => FCRPlugin.fogConfig?.disable ?? FCRFogConfig.dDisable;
@@ -26,11 +28,20 @@ namespace Rumi.FixCameraResolutions.Fogs
         {
             Volume[] volumes = Object.FindObjectsByType<Volume>(FindObjectsSortMode.None);
             for (int i = 0; i < volumes.Length; i++)
-                UpdateVolume(volumes[i]);
+            {
+                Volume volume = volumes[i];
+                volume.StartCoroutine(UpdateVolume(volume));
+            }
         }
 
-        public static void UpdateVolume(Volume volume)
+        public static IEnumerator UpdateVolume(Volume volume)
         {
+            //profile이 생성될 때까지 대기
+            yield return new WaitForEndOfFrame();
+
+            if (volume.profile == null)
+                yield break;
+
             for (int i = 0; i < volume.profile.components.Count; i++)
             {
                 VolumeComponent component = volume.profile.components[i];
