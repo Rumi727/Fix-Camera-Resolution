@@ -73,6 +73,23 @@ namespace Rumi.FixCameraResolutions.Resolutions
             _height = config.Bind("Resolutions", "Height", dHeight, new ConfigDescription(string.Empty, new AcceptableValueRange<int>(10, 2160)));
             _height.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
 
+            #region ~ 1.0.2
+            {
+                config.Bind("General", "Auto Size", true);
+                config.Remove(new ConfigDefinition("General", "Auto Size"));
+            }
+
+            {
+                config.Bind("General", "Width", 1920);
+                config.Remove(new ConfigDefinition("General", "Width"));
+            }
+
+            {
+                config.Bind("General", "Height", 1080);
+                config.Remove(new ConfigDefinition("General", "Height"));
+            }
+            #endregion
+
             try
             {
                 LethalConfigPatch();

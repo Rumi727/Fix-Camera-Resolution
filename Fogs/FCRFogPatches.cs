@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using System.Collections;
 using UnityEngine;
 using UnityEngine.Rendering;
 using UnityEngine.Rendering.HighDefinition;
@@ -12,7 +11,7 @@ namespace Rumi.FixCameraResolutions.Fogs
         static class OnEnablePatch
         {
             [HarmonyPatch("OnEnable"), HarmonyPostfix]
-            static void OnEnable(Volume __instance) => __instance.StartCoroutine(UpdateVolume(__instance));
+            static void OnEnable(Volume __instance) => UpdateVolume(__instance);
         }
 
         [HarmonyPatch(typeof(Volume))]
@@ -21,8 +20,14 @@ namespace Rumi.FixCameraResolutions.Fogs
             [HarmonyPatch("Update"), HarmonyPostfix] static void Update(Volume __instance) => UpdateVolume(__instance);
         }
 
-        public static bool disable => FCRPlugin.fogConfig?.disable ?? FCRFogConfig.dDisable;
-        public static bool alwaysUpdate => FCRPlugin.fogConfig?.alwaysUpdate ?? FCRFogConfig.dAlwaysUpdate;
+        [HarmonyPatch(typeof(Fog))]
+        static class FogPatch
+        {
+            [HarmonyPatch("volumetricFogBudget", MethodType.Getter), HarmonyPostfix] static void volumetricFogBudget(ref float __result) => __result = 0.0f;
+            [HarmonyPatch("resolutionDepthRatio", MethodType.Getter), HarmonyPostfix] static void resolutionDepthRatio(ref float __result) => __result = 0.0f;
+        }
+
+        public static FogMode fogMode => FCRPlugin.fogConfig?.fogMode ?? FCRFogConfig.dFogMode;
 
         public static void UpdateAllVolume()
         {
@@ -30,39 +35,34 @@ namespace Rumi.FixCameraResolutions.Fogs
             for (int i = 0; i < volumes.Length; i++)
             {
                 Volume volume = volumes[i];
-                volume.StartCoroutine(UpdateVolume(volume));
+                UpdateVolume(volume);
             }
         }
 
-        public static IEnumerator UpdateVolume(Volume volume)
+        public static void UpdateVolume(Volume volume)
         {
-            //profile이 생성될 때까지 대기
-            yield return new WaitForEndOfFrame();
+            if (volume.sharedProfile == null)
+                return;
 
-            if (volume.profile == null)
-                yield break;
-
-            for (int i = 0; i < volume.profile.components.Count; i++)
-            {
-                VolumeComponent component = volume.profile.components[i];
-                if (component != null && component is Fog fog)
-                    fog.enabled.value = !disable;
-            }
+            if (volume.sharedProfile.TryGet(out Fog fog))
+                fog.active = fogMode != FogMode.Disable && fogMode != FogMode.ForceDisable;
         }
 
         internal static void Patch()
         {
-            if (!disable)
+            if (fogMode == FogMode.Vanilla)
                 return;
 
             Debug.Log("Fog Patch...");
 
             try
             {
-                if (disable)
+                if (fogMode == FogMode.Hide)
+                    FCRPlugin.harmony.PatchAll(typeof(FogPatch));
+                else if (fogMode == FogMode.Disable || fogMode == FogMode.ForceDisable)
                 {
                     FCRPlugin.harmony.PatchAll(typeof(OnEnablePatch));
-                    if (alwaysUpdate)
+                    if (fogMode == FogMode.ForceDisable)
                         FCRPlugin.harmony.PatchAll(typeof(UpdatePatch));
                 }
 

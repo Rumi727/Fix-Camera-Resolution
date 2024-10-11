@@ -1,27 +1,18 @@
 ﻿using BepInEx.Configuration;
-using LethalConfig.ConfigItems;
 using LethalConfig;
-using LethalConfig.ConfigItems.Options;
+using LethalConfig.ConfigItems;
 
 namespace Rumi.FixCameraResolutions.Fogs
 {
     public sealed class FCRFogConfig
     {
-        public bool disable
+        public FogMode fogMode
         {
-            get => _disable.Value;
-            set => _disable.Value = value;
+            get => _fogMode.Value;
+            set => _fogMode.Value = value;
         }
-        readonly ConfigEntry<bool> _disable;
-        public const bool dDisable = false;
-
-        public bool alwaysUpdate
-        {
-            get => _alwaysUpdate.Value;
-            set => _alwaysUpdate.Value = value;
-        }
-        readonly ConfigEntry<bool> _alwaysUpdate;
-        public const bool dAlwaysUpdate = false;
+        readonly ConfigEntry<FogMode> _fogMode;
+        public const FogMode dFogMode = FogMode.Vanilla;
 
         internal static FCRFogConfig? Create(ConfigFile config)
         {
@@ -45,11 +36,52 @@ namespace Rumi.FixCameraResolutions.Fogs
 
         FCRFogConfig(ConfigFile config)
         {
-            _disable = config.Bind("Fogs", "Disable", dDisable, "Disables fog rendering");
-            _disable.SettingChanged += (sender, e) => FCRPlugin.Repatch();
+            _fogMode = config.Bind("Fogs", "Fog Rendering Method", dFogMode,
+@"Sets how fog is rendered.
 
-            _alwaysUpdate = config.Bind("Fogs", "Always Update", dDisable, "Prevents fog from being removed from mod planets by updating every frame instead of just at startup\nEnable only when necessary as it may affect performance");
-            _alwaysUpdate.SettingChanged += (sender, e) => FCRPlugin.Repatch();
+-------------------------
+
+
+Vanilla
+-------------------------
+Use default fog settings
+
+
+Hide
+-------------------------
+It doesn't completely remove the fog, but it adjusts it so that it doesn't obstruct your vision.
+
+
+Disable
+-------------------------
+Completely disables all fog rendering.
+
+
+ForceDisable
+-------------------------
+Attempts to completely disable all fog rendering on every frame.
+
+Can be used when fog removal is not working on a mod planet
+
+Do not use this setting unless you have a problem
+
+
+-------------------------
+
+");
+            _fogMode.SettingChanged += (sender, e) => FCRPlugin.Repatch();
+
+            #region ~ 1.0.2
+            {
+                config.Bind("Fogs", "Disable", false);
+                config.Remove(new ConfigDefinition("Fogs", "Disable"));
+            }
+
+            {
+                config.Bind("Fogs", "Always Update", false);
+                config.Remove(new ConfigDefinition("Fogs", "Always Update"));
+            }
+            #endregion
 
             try
             {
@@ -67,16 +99,6 @@ namespace Rumi.FixCameraResolutions.Fogs
             }
         }
 
-        void LethalConfigPatch()
-        {
-            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_disable, false));
-            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_alwaysUpdate, new BoolCheckBoxOptions()
-            {
-                RequiresRestart = false,
-                CanModifyCallback = CanModifyAlwaysUpdate
-            }));
-        }
-
-        static CanModifyResult CanModifyAlwaysUpdate() => (FCRPlugin.fogConfig?.disable ?? dDisable, "Fog patch is disabled and cannot be modified");
+        void LethalConfigPatch() => LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<FogMode>(_fogMode));
     }
 }
