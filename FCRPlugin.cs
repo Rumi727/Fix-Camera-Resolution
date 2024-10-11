@@ -12,7 +12,7 @@ namespace Rumi.FixCameraResolutions
     {
         public const string modGuid = "Rumi.FixCameraResolutions";
         public const string modName = "FixCameraResolutions";
-        public const string modVersion = "1.2.0";
+        public const string modVersion = "1.2.1";
 
         internal static ManualLogSource? logger { get; private set; } = null;
 
@@ -42,7 +42,7 @@ namespace Rumi.FixCameraResolutions
         public static void Repatch()
         {
             FCRResPatches.UpdateAll();
-            FCRFogPatches.UpdateAllVolume();
+            FCRFogPatches.UpdateAll();
             FCRVisorPatches.UpdateAllPlayer();
 
             Unpatch();
