@@ -12,7 +12,7 @@ namespace Rumi.FixCameraResolutions
     {
         public const string modGuid = "Rumi.FixCameraResolutions";
         public const string modName = "FixCameraResolutions";
-        public const string modVersion = "1.2.1";
+        public const string modVersion = "1.2.2";
 
         internal static ManualLogSource? logger { get; private set; } = null;
 

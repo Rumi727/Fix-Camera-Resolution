@@ -99,6 +99,6 @@ Do not use this setting unless you have a problem
             }
         }
 
-        void LethalConfigPatch() => LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<FogMode>(_fogMode));
+        void LethalConfigPatch() => LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<FogMode>(_fogMode, false));
     }
 }
