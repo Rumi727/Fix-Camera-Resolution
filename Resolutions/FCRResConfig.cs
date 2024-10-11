@@ -67,10 +67,10 @@ namespace Rumi.FixCameraResolutions.Resolutions
             _autoSize = config.Bind("Resolutions", "Auto Size", dAutoSize, "When enabled, sets the camera size to the size of the current game window.");
             _autoSize.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
 
-            _width = config.Bind("Resolutions", "Width", dWidth);
+            _width = config.Bind("Resolutions", "Width", dWidth, new ConfigDescription(string.Empty, new AcceptableValueRange<int>(10, 3840)));
             _width.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
 
-            _height = config.Bind("Resolutions", "Height", dHeight);
+            _height = config.Bind("Resolutions", "Height", dHeight, new ConfigDescription(string.Empty, new AcceptableValueRange<int>(10, 2160)));
             _height.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
 
             try
@@ -101,7 +101,7 @@ namespace Rumi.FixCameraResolutions.Resolutions
 
             LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_width, new IntSliderOptions()
             {
-                Min = 1,
+                Min = 10,
                 Max = 3840,
                 RequiresRestart = false,
                 CanModifyCallback = CanModifySize
@@ -109,7 +109,7 @@ namespace Rumi.FixCameraResolutions.Resolutions
 
             LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_height, new IntSliderOptions()
             {
-                Min = 1,
+                Min = 10,
                 Max = 2160,
                 RequiresRestart = false,
                 CanModifyCallback = CanModifySize
