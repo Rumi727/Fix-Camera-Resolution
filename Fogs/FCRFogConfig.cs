@@ -71,18 +71,6 @@ Do not use this setting unless you have a problem
 ");
             _fogMode.SettingChanged += (sender, e) => FCRPlugin.Repatch();
 
-            #region ~ 1.0.2
-            {
-                config.Bind("Fogs", "Disable", false);
-                config.Remove(new ConfigDefinition("Fogs", "Disable"));
-            }
-
-            {
-                config.Bind("Fogs", "Always Update", false);
-                config.Remove(new ConfigDefinition("Fogs", "Always Update"));
-            }
-            #endregion
-
             try
             {
                 LethalConfigPatch();

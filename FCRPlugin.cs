@@ -72,11 +72,5 @@ namespace Rumi.FixCameraResolutions
 
             Debug.Log("Unpatched!");
         }
-
-
-
-        #region Obsolete
-        [System.Obsolete("Deprecated class name! Please use FCRResConfig")] public static FCRConfig config => new FCRConfig(resConfig);
-        #endregion
     }
 }
