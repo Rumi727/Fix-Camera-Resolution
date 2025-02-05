@@ -36,7 +36,7 @@ namespace Rumi.FixCameraResolutions.Fogs
 
         public static void UpdateAllVolume()
         {
-            Volume[] volumes = Object.FindObjectsByType<Volume>(FindObjectsSortMode.None);
+            Volume[] volumes = Object.FindObjectsByType<Volume>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             for (int i = 0; i < volumes.Length; i++)
                 UpdateVolume(volumes[i]);
         }
@@ -52,13 +52,20 @@ namespace Rumi.FixCameraResolutions.Fogs
 
         public static void UpdateAllHDCameraData()
         {
-            HDAdditionalCameraData[] cameraDatas = Object.FindObjectsByType<HDAdditionalCameraData>(FindObjectsSortMode.None);
+            HDAdditionalCameraData[] cameraDatas = Object.FindObjectsByType<HDAdditionalCameraData>(FindObjectsInactive.Include, FindObjectsSortMode.None);
             for (int i = 0; i < cameraDatas.Length; i++)
                 UpdateHDCameraData(cameraDatas[i]);
         }
 
         public static void UpdateHDCameraData(HDAdditionalCameraData cameraData)
         {
+            /*
+             * 관전시에 설정 적용 안되는 버그 수정
+             * ...이거 왜 됨
+             */
+            if (cameraData.gameObject.name == "SpectateCamera")
+                cameraData.customRenderingSettings = fogMode != FogMode.Vanilla;
+
             /* 
              * API 문서 겁나 뒤져보다가 발견한 설정인데
              * 이게 왜 되는지는 잘 모르겠다
