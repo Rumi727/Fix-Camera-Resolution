@@ -17,7 +17,7 @@ namespace Rumi.FixCameraResolutions
         internal static ManualLogSource? logger { get; private set; } = null;
 
         public static FCRResConfig? resConfig { get; private set; }
-        public static FCRFogConfig? fogConfig { get; private set; }
+        public static FCRHDRPConfig? hdrpConfig { get; private set; }
         public static FCRVisorConfig? visorConfig { get; private set; }
 
         internal static Harmony harmony { get; } = new Harmony(modGuid);
@@ -29,7 +29,7 @@ namespace Rumi.FixCameraResolutions
             Debug.Log("Start loading plugin...");
 
             resConfig = FCRResConfig.Create(Config);
-            fogConfig = FCRFogConfig.Create(Config);
+            hdrpConfig = FCRHDRPConfig.Create(Config);
             visorConfig = FCRVisorConfig.Create(Config);
 
             Config.Save();
@@ -42,7 +42,7 @@ namespace Rumi.FixCameraResolutions
         public static void Repatch()
         {
             FCRResPatches.UpdateAll();
-            FCRFogPatches.UpdateAll();
+            FCRHDRPPatches.UpdateAll();
             FCRVisorPatches.UpdateAllPlayer();
 
             Unpatch();
@@ -52,7 +52,7 @@ namespace Rumi.FixCameraResolutions
         static void Patch()
         {
             FCRResPatches.Patch();
-            FCRFogPatches.Patch();
+            FCRHDRPPatches.Patch();
             FCRVisorPatches.Patch();
         }
 

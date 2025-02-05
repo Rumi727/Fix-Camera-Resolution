@@ -5,7 +5,7 @@ using UnityEngine.Rendering.HighDefinition;
 
 namespace Rumi.FixCameraResolutions.Fogs
 {
-    public static class FCRFogPatches
+    public static class FCRHDRPPatches
     {
         [HarmonyPatch(typeof(Volume))]
         static class OnEnablePatch
@@ -26,7 +26,12 @@ namespace Rumi.FixCameraResolutions.Fogs
             [HarmonyPatch("Awake"), HarmonyPostfix] static void Awake(HDAdditionalCameraData __instance) => UpdateHDCameraData(__instance);
         }
 
-        public static FogMode fogMode => FCRPlugin.fogConfig?.fogMode ?? FCRFogConfig.dFogMode;
+        public static AntialiasingMode antialiasingMode => FCRPlugin.hdrpConfig?.antialiasingMode ?? FCRHDRPConfig.dAntialiasingMode;
+        public static HDRPMode bloomMode => FCRPlugin.hdrpConfig?.bloomMode ?? FCRHDRPConfig.dBloomMode;
+        public static FogMode fogMode => FCRPlugin.hdrpConfig?.fogMode ?? FCRHDRPConfig.dFogMode;
+        public static HDRPMode shadowMode => FCRPlugin.hdrpConfig?.shadowMode ?? FCRHDRPConfig.dShadowMode;
+        public static HDRPMode postProcessingMode => FCRPlugin.hdrpConfig?.postProcessingMode ?? FCRHDRPConfig.dPostProcessingMode;
+        public static HDRPMode vignetteMode => FCRPlugin.hdrpConfig?.vignetteMode ?? FCRHDRPConfig.dVignetteMode;
 
         public static void UpdateAll()
         {
@@ -47,7 +52,7 @@ namespace Rumi.FixCameraResolutions.Fogs
                 return;
 
             if (volume.sharedProfile.TryGet(out Fog fog))
-                fog.active = fogMode != FogMode.Disable && fogMode != FogMode.ForceDisable;
+                fog.active = fogMode != FogMode.Disable && fogMode != FogMode.ForceDisable; 
         }
 
         public static void UpdateAllHDCameraData()
@@ -66,12 +71,33 @@ namespace Rumi.FixCameraResolutions.Fogs
             if (cameraData.gameObject.name == "SpectateCamera")
                 cameraData.customRenderingSettings = fogMode != FogMode.Vanilla;
 
+            if (cameraData.gameObject.name != "UICamera")
+            {
+                cameraData.antialiasing = (HDAdditionalCameraData.AntialiasingMode)antialiasingMode;
+
+                cameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.Antialiasing] = antialiasingMode != AntialiasingMode.None;
+                cameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Antialiasing, antialiasingMode != AntialiasingMode.None);
+            }
+
             /* 
              * API 문서 겁나 뒤져보다가 발견한 설정인데
              * 이게 왜 되는지는 잘 모르겠다
              */
-            cameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(int)FrameSettingsField.Volumetrics] = fogMode != FogMode.Vanilla;
+
+            cameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.Bloom] = bloomMode != HDRPMode.Vanilla;
+            cameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Bloom, bloomMode == HDRPMode.Vanilla);
+
+            cameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.Volumetrics] = fogMode != FogMode.Vanilla;
             cameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Volumetrics, fogMode == FogMode.Vanilla);
+
+            cameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.ShadowMaps] = shadowMode != HDRPMode.Vanilla;
+            cameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.ShadowMaps, shadowMode == HDRPMode.Vanilla);
+
+            cameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.CustomPass] = postProcessingMode != HDRPMode.Vanilla;
+            cameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.CustomPass, postProcessingMode == HDRPMode.Vanilla);
+
+            cameraData.renderingPathCustomFrameSettingsOverrideMask.mask[(uint)FrameSettingsField.Vignette] = vignetteMode != HDRPMode.Vanilla;
+            cameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Vignette, vignetteMode == HDRPMode.Vanilla);
         }
 
         internal static void Patch()
