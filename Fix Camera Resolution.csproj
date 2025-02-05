@@ -4,7 +4,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Rumi.FixCameraResolutions</RootNamespace>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <LangVersion>8.0</LangVersion>
+    <LangVersion>9.0</LangVersion>
     <Nullable>enable</Nullable>
   </PropertyGroup>
   <ItemGroup>
