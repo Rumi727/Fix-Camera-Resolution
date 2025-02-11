@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using LethalConfig;
 using LethalConfig.ConfigItems;
+using System.Runtime.CompilerServices;
 
 namespace Rumi.FixCameraResolutions.Fogs
 {
@@ -121,31 +122,20 @@ Do not use this setting unless you have a problem
             _shadowMode.SettingChanged += (sender, e) => FCRPlugin.Repatch();
             _postProcessingMode.SettingChanged += (sender, e) => FCRPlugin.Repatch();
             _vignetteMode.SettingChanged += (sender, e) => FCRPlugin.Repatch();
-
-            try
-            {
-                LethalConfigPatch();
-            }
-            catch (System.IO.FileNotFoundException e)
-            {
-                Debug.LogError(e);
-                Debug.LogWarning("Lethal Config Add Fail! (This is not a bug and occurs when LethalConfig is not present)");
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                Debug.LogError("Lethal Config Add Fail!");
-            }
         }
 
-        void LethalConfigPatch()
+        public static class LethalConfig
         {
-            LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<AntialiasingMode>(_antialiasingMode, false));
-            LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<HDRPMode>(_bloomMode, false));
-            LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<FogMode>(_fogMode, false));
-            LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<HDRPMode>(_shadowMode, false));
-            LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<HDRPMode>(_postProcessingMode, false));
-            LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<HDRPMode>(_vignetteMode, false));
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            public static void Patch(FCRHDRPConfig config)
+            {
+                LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<AntialiasingMode>(config._antialiasingMode, false));
+                LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<HDRPMode>(config._bloomMode, false));
+                LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<FogMode>(config._fogMode, false));
+                LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<HDRPMode>(config._shadowMode, false));
+                LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<HDRPMode>(config._postProcessingMode, false));
+                LethalConfigManager.AddConfigItem(new EnumDropDownConfigItem<HDRPMode>(config._vignetteMode, false));
+            }
         }
     }
 }

@@ -4,6 +4,7 @@ using HarmonyLib;
 using Rumi.FixCameraResolutions.Fogs;
 using Rumi.FixCameraResolutions.Resolutions;
 using Rumi.FixCameraResolutions.Visors;
+using System;
 
 namespace Rumi.FixCameraResolutions
 {
@@ -31,6 +32,28 @@ namespace Rumi.FixCameraResolutions
             resConfig = FCRResConfig.Create(Config);
             hdrpConfig = FCRHDRPConfig.Create(Config);
             visorConfig = FCRVisorConfig.Create(Config);
+
+            if (Type.GetType("LethalConfig.LethalConfigManager, LethalConfig, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null", false) != null)
+            {
+                try
+                {
+                    Debug.Log("Lethal Config Registration");
+
+                    if (resConfig != null)
+                        FCRResConfig.LethalConfig.Patch(resConfig);
+
+                    if (hdrpConfig != null)
+                        FCRHDRPConfig.LethalConfig.Patch(hdrpConfig);
+
+                    if (visorConfig != null)
+                        FCRVisorConfig.LethalConfig.Patch(visorConfig);
+                }
+                catch (Exception e)
+                {
+                    Debug.LogError(e);
+                    Debug.LogWarning("Lethal Config Registration Fail!");
+                }
+            }
 
             Config.Save();
 

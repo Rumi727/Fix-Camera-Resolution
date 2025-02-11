@@ -2,6 +2,7 @@
 using LethalConfig;
 using LethalConfig.ConfigItems;
 using LethalConfig.ConfigItems.Options;
+using System.Runtime.CompilerServices;
 
 namespace Rumi.FixCameraResolutions.Resolutions
 {
@@ -72,74 +73,47 @@ namespace Rumi.FixCameraResolutions.Resolutions
 
             _height = config.Bind("Resolutions", "Height", dHeight, new ConfigDescription(string.Empty, new AcceptableValueRange<int>(10, 2160)));
             _height.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
-
-            #region ~ 1.0.2
-            {
-                config.Bind("General", "Auto Size", true);
-                config.Remove(new ConfigDefinition("General", "Auto Size"));
-            }
-
-            {
-                config.Bind("General", "Width", 1920);
-                config.Remove(new ConfigDefinition("General", "Width"));
-            }
-
-            {
-                config.Bind("General", "Height", 1080);
-                config.Remove(new ConfigDefinition("General", "Height"));
-            }
-            #endregion
-
-            try
-            {
-                LethalConfigPatch();
-            }
-            catch (System.IO.FileNotFoundException e)
-            {
-                Debug.LogError(e);
-                Debug.LogWarning("Lethal Config Add Fail! (This is not a bug and occurs when LethalConfig is not present)");
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                Debug.LogError("Lethal Config Add Fail!");
-            }
         }
 
-        void LethalConfigPatch()
+        public static class LethalConfig
         {
-            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_enable, false));
-
-            LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_autoSize, new BoolCheckBoxOptions()
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            public static void Patch(FCRResConfig config)
             {
-                RequiresRestart = false,
-                CanModifyCallback = CanModifyAutoSize
-            }));
+                LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(config._enable, false));
 
-            LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_width, new IntSliderOptions()
+                LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(config._autoSize, new BoolCheckBoxOptions()
+                {
+                    RequiresRestart = false,
+                    CanModifyCallback = CanModifyAutoSize
+                }));
+
+                LethalConfigManager.AddConfigItem(new IntSliderConfigItem(config._width, new IntSliderOptions()
+                {
+                    Min = 10,
+                    Max = 3840,
+                    RequiresRestart = false,
+                    CanModifyCallback = CanModifySize
+                }));
+
+                LethalConfigManager.AddConfigItem(new IntSliderConfigItem(config._height, new IntSliderOptions()
+                {
+                    Min = 10,
+                    Max = 2160,
+                    RequiresRestart = false,
+                    CanModifyCallback = CanModifySize
+                }));
+
+                LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("Resolutions", "Refresh resolution", "If the resolution has been released for some reason, you can refresh it using this button.", "Refresh", () => FCRResPatches.UpdateAll()));
+            }
+
+            static CanModifyResult CanModifyAutoSize() => (FCRPlugin.resConfig?.enable ?? dEnable, "Resolution patch is disabled and cannot be modified");
+
+            static CanModifyResult CanModifySize()
             {
-                Min = 10,
-                Max = 3840,
-                RequiresRestart = false,
-                CanModifyCallback = CanModifySize
-            }));
-
-            LethalConfigManager.AddConfigItem(new IntSliderConfigItem(_height, new IntSliderOptions()
-            {
-                Min = 10,
-                Max = 2160,
-                RequiresRestart = false,
-                CanModifyCallback = CanModifySize
-            }));
-
-            LethalConfigManager.AddConfigItem(new GenericButtonConfigItem("Resolutions", "Refresh resolution", "If the resolution has been released for some reason, you can refresh it using this button.", "Refresh", () => FCRResPatches.UpdateAll()));
-        }
-
-        static CanModifyResult CanModifyAutoSize() => (FCRPlugin.resConfig?.enable ?? dEnable, "Resolution patch is disabled and cannot be modified");
-        static CanModifyResult CanModifySize()
-        {
-            var result = CanModifyAutoSize();
-            return !result ? result : (!(FCRPlugin.resConfig?.autoSize ?? dAutoSize), "Since auto size is enabled, the size is automatically set to the current game window size.");
+                var result = CanModifyAutoSize();
+                return !result ? result : (!(FCRPlugin.resConfig?.autoSize ?? dAutoSize), "Since auto size is enabled, the size is automatically set to the current game window size.");
+            }
         }
     }
 }

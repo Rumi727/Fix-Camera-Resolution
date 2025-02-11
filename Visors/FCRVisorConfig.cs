@@ -1,6 +1,7 @@
 ﻿using BepInEx.Configuration;
 using LethalConfig;
 using LethalConfig.ConfigItems;
+using System.Runtime.CompilerServices;
 
 namespace Rumi.FixCameraResolutions.Visors
 {
@@ -38,23 +39,12 @@ namespace Rumi.FixCameraResolutions.Visors
         {
             _disable = config.Bind("Visors", "Disable", dDisable, "Disables visor rendering");
             _disable.SettingChanged += (sender, e) => FCRPlugin.Repatch();
-
-            try
-            {
-                LethalConfigPatch();
-            }
-            catch (System.IO.FileNotFoundException e)
-            {
-                Debug.LogError(e);
-                Debug.LogWarning("Lethal Config Add Fail! (This is not a bug and occurs when LethalConfig is not present)");
-            }
-            catch (System.Exception e)
-            {
-                Debug.LogError(e);
-                Debug.LogError("Lethal Config Add Fail!");
-            }
         }
 
-        void LethalConfigPatch() => LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(_disable, false));
+        public static class LethalConfig
+        {
+            [MethodImpl(MethodImplOptions.NoInlining)]
+            public static void Patch(FCRVisorConfig config) => LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(config._disable, false));
+        }
     }
 }
