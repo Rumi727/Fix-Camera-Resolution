@@ -1,7 +1,6 @@
 ﻿using BepInEx.Configuration;
 using LethalConfig;
 using LethalConfig.ConfigItems;
-using UnityEngine.Rendering.HighDefinition;
 
 namespace Rumi.FixCameraResolutions.Fogs
 {
@@ -57,12 +56,12 @@ namespace Rumi.FixCameraResolutions.Fogs
 
         internal static FCRHDRPConfig? Create(ConfigFile config)
         {
-            Debug.Log("Fog Config Loading...");
+            Debug.Log("HDRP Config Loading...");
 
             try
             {
                 var result = new FCRHDRPConfig(config);
-                Debug.Log("Fog Config Loaded!");
+                Debug.Log("HDRP Config Loaded!");
 
                 return result;
             }
