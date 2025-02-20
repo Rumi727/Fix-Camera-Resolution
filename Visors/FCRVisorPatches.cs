@@ -22,7 +22,24 @@ namespace Rumi.FixCameraResolutions.Visors
         public static void UpdatePlayer(PlayerControllerB player)
         {
             if (player.localVisor != null)
-                player.localVisor.gameObject.SetActive(!disable);
+            {
+                Transform? scavengerHelmet = player.localVisor.Find("ScavengerHelmet");
+                Transform? plane = player.localVisor.Find("ScavengerHelmet/Plane");
+
+                if (plane == null)
+                    plane = player.localVisor.Find("Plane");
+
+                if (scavengerHelmet != null && plane != null)
+                {
+                    //특정 각도에서 안개가 사라지는 요상한 버그 수정
+                    if (disable)
+                        plane.SetParent(player.localVisor);
+                    else
+                        plane.SetParent(scavengerHelmet);
+
+                    scavengerHelmet.gameObject.SetActive(!disable);
+                }
+            }
         }
 
         internal static void Patch()
