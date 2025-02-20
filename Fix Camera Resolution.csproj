@@ -41,6 +41,9 @@
     <Reference Include="UnityEngine.CoreModule">
       <HintPath>dlls\UnityEngine.CoreModule.dll</HintPath>
     </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>dlls\UnityEngine.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <Target Name="PostBuild" AfterTargets="PostBuildEvent">
     <Exec Command="IF $(ConfigurationName)==Debug call postbuild-debug.bat &quot;$(OutputPath)&quot; &quot;$(AssemblyName)&quot;&#xD;&#xA;IF $(ConfigurationName)==Release call postbuild.bat &quot;$(OutputPath)&quot; &quot;$(AssemblyName)&quot;" />

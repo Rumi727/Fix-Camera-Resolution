@@ -2,6 +2,7 @@
 using BepInEx.Logging;
 using HarmonyLib;
 using Rumi.FixCameraResolutions.Fogs;
+using Rumi.FixCameraResolutions.HUD;
 using Rumi.FixCameraResolutions.Resolutions;
 using Rumi.FixCameraResolutions.Visors;
 using System;
@@ -20,6 +21,7 @@ namespace Rumi.FixCameraResolutions
         internal static ManualLogSource? logger { get; private set; } = null;
 
         public static FCRResConfig? resConfig { get; private set; }
+        public static FCRHUDConfig? hudConfig { get; private set; }
         public static FCRHDRPConfig? hdrpConfig { get; private set; }
         public static FCRVisorConfig? visorConfig { get; private set; }
 
@@ -33,6 +35,7 @@ namespace Rumi.FixCameraResolutions
             Debug.Log("Start loading plugin...");
 
             resConfig = FCRResConfig.Create(Config);
+            hudConfig = FCRHUDConfig.Create(Config);
             hdrpConfig = FCRHDRPConfig.Create(Config);
             visorConfig = FCRVisorConfig.Create(Config);
 
@@ -44,6 +47,9 @@ namespace Rumi.FixCameraResolutions
 
                     if (resConfig != null)
                         FCRResConfig.LethalConfig.Patch(resConfig);
+
+                    if (hudConfig != null)
+                        FCRHUDConfig.LethalConfig.Patch(hudConfig);
 
                     if (hdrpConfig != null)
                         FCRHDRPConfig.LethalConfig.Patch(hdrpConfig);
@@ -78,6 +84,7 @@ namespace Rumi.FixCameraResolutions
             }
 
             FCRResPatches.UpdateAll();
+            FCRHUDPatches.UpdateHUDManager(HUDManager.Instance);
             FCRHDRPPatches.UpdateAll();
             FCRVisorPatches.UpdateAllPlayer();
 
@@ -94,6 +101,7 @@ namespace Rumi.FixCameraResolutions
         static void Patch()
         {
             FCRResPatches.Patch();
+            FCRHUDPatches.Patch();
             FCRHDRPPatches.Patch();
             FCRVisorPatches.Patch();
         }
