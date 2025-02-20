@@ -100,7 +100,7 @@ namespace Rumi.FixCameraResolutions.Fogs
             cameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Vignette, vignetteMode == HDRPMode.Vanilla);
         }
 
-        static bool IsVanillaMode() => bloomMode == HDRPMode.Vanilla && fogMode == FogMode.Vanilla && shadowMode == HDRPMode.Vanilla && postProcessingMode == HDRPMode.Vanilla && vignetteMode == HDRPMode.Vanilla;
+        static bool IsVanillaMode() => antialiasingMode == AntialiasingMode.None && bloomMode == HDRPMode.Vanilla && fogMode == FogMode.Vanilla && shadowMode == HDRPMode.Vanilla && postProcessingMode == HDRPMode.Vanilla && vignetteMode == HDRPMode.Vanilla;
 
         internal static void Patch()
         {
