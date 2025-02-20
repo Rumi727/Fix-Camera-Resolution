@@ -69,7 +69,7 @@ namespace Rumi.FixCameraResolutions.Fogs
              * ...이거 왜 됨
              */
             if (cameraData.gameObject.name == "SpectateCamera")
-                cameraData.customRenderingSettings = fogMode != FogMode.Vanilla;
+                cameraData.customRenderingSettings = !IsVanillaMode();
 
             if (cameraData.gameObject.name != "UICamera")
             {
@@ -100,19 +100,24 @@ namespace Rumi.FixCameraResolutions.Fogs
             cameraData.renderingPathCustomFrameSettings.SetEnabled(FrameSettingsField.Vignette, vignetteMode == HDRPMode.Vanilla);
         }
 
+        static bool IsVanillaMode() => bloomMode == HDRPMode.Vanilla && fogMode == FogMode.Vanilla && shadowMode == HDRPMode.Vanilla && postProcessingMode == HDRPMode.Vanilla && vignetteMode == HDRPMode.Vanilla;
+
         internal static void Patch()
         {
             Debug.Log("Fog Patch...");
 
             try
             {
-                FCRPlugin.harmony.PatchAll(typeof(HDAdditionalCameraDataPatch));
-
-                if (fogMode == FogMode.Disable || fogMode == FogMode.ForceDisable)
+                if (!IsVanillaMode())
                 {
-                    FCRPlugin.harmony.PatchAll(typeof(OnEnablePatch));
-                    if (fogMode == FogMode.ForceDisable)
-                        FCRPlugin.harmony.PatchAll(typeof(UpdatePatch));
+                    FCRPlugin.harmony.PatchAll(typeof(HDAdditionalCameraDataPatch));
+
+                    if (fogMode == FogMode.Disable || fogMode == FogMode.ForceDisable)
+                    {
+                        FCRPlugin.harmony.PatchAll(typeof(OnEnablePatch));
+                        if (fogMode == FogMode.ForceDisable)
+                            FCRPlugin.harmony.PatchAll(typeof(UpdatePatch));
+                    }
                 }
 
                 Debug.Log("Fog Patched!");
