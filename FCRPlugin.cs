@@ -5,6 +5,7 @@ using Rumi.FixCameraResolutions.Fogs;
 using Rumi.FixCameraResolutions.Resolutions;
 using Rumi.FixCameraResolutions.Visors;
 using System;
+using System.Collections;
 
 namespace Rumi.FixCameraResolutions
 {
@@ -15,6 +16,7 @@ namespace Rumi.FixCameraResolutions
         public const string modName = "FixCameraResolutions";
         public const string modVersion = "1.3.4";
 
+        internal static FCRPlugin? instance { get; private set; } = null;
         internal static ManualLogSource? logger { get; private set; } = null;
 
         public static FCRResConfig? resConfig { get; private set; }
@@ -26,6 +28,7 @@ namespace Rumi.FixCameraResolutions
         void Awake()
         {
             logger = Logger;
+            instance = this;
 
             Debug.Log("Start loading plugin...");
 
@@ -62,14 +65,30 @@ namespace Rumi.FixCameraResolutions
             Debug.Log($"Plugin {modName} is loaded!");
         }
 
+        static bool isRepatchedToCurrentFrame = false;
         public static void Repatch()
         {
+            if (isRepatchedToCurrentFrame)
+                return;
+
+            if (instance != null)
+            {
+                isRepatchedToCurrentFrame = true;
+                instance.StartCoroutine(RepatchedToCurrentFrame());
+            }
+
             FCRResPatches.UpdateAll();
             FCRHDRPPatches.UpdateAll();
             FCRVisorPatches.UpdateAllPlayer();
 
             Unpatch();
             Patch();
+        }
+
+        static IEnumerator RepatchedToCurrentFrame()
+        {
+            yield return null;
+            isRepatchedToCurrentFrame = false;
         }
 
         static void Patch()
@@ -87,7 +106,7 @@ namespace Rumi.FixCameraResolutions
             {
                 harmony.UnpatchSelf();
             }
-            catch (System.Exception e)
+            catch (Exception e)
             {
                 Debug.LogError(e);
                 Debug.LogError("Unpatch Fail!");
