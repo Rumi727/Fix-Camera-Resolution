@@ -104,20 +104,20 @@ namespace Rumi.FixCameraResolutions.Fogs
 
         internal static void Patch()
         {
+            if (IsVanillaMode())
+                return;
+
             Debug.Log("Fog Patch...");
 
             try
             {
-                if (!IsVanillaMode())
-                {
-                    FCRPlugin.harmony.PatchAll(typeof(HDAdditionalCameraDataPatch));
+                FCRPlugin.harmony.PatchAll(typeof(HDAdditionalCameraDataPatch));
 
-                    if (fogMode == FogMode.Disable || fogMode == FogMode.ForceDisable)
-                    {
-                        FCRPlugin.harmony.PatchAll(typeof(OnEnablePatch));
-                        if (fogMode == FogMode.ForceDisable)
-                            FCRPlugin.harmony.PatchAll(typeof(UpdatePatch));
-                    }
+                if (fogMode == FogMode.Disable || fogMode == FogMode.ForceDisable)
+                {
+                    FCRPlugin.harmony.PatchAll(typeof(OnEnablePatch));
+                    if (fogMode == FogMode.ForceDisable)
+                        FCRPlugin.harmony.PatchAll(typeof(UpdatePatch));
                 }
 
                 Debug.Log("Fog Patched!");
