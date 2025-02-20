@@ -40,6 +40,14 @@ namespace Rumi.FixCameraResolutions.Resolutions
         readonly ConfigEntry<int> _height;
         public const int dHeight = 1080;
 
+        public bool checkResolutionEveryFrame
+        {
+            get => _checkResolutionEveryFrame.Value;
+            set => _checkResolutionEveryFrame.Value = value;
+        }
+        readonly ConfigEntry<bool> _checkResolutionEveryFrame;
+        public const bool dCheckResolutionEveryFrame = false;
+
         internal static FCRResConfig? Create(ConfigFile config)
         {
             Debug.Log("Resolution Config Loading...");
@@ -68,6 +76,9 @@ namespace Rumi.FixCameraResolutions.Resolutions
             _autoSize = config.Bind("Resolutions", "Auto Size", dAutoSize, "When enabled, sets the camera size to the size of the current game window.");
             _autoSize.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
 
+            _checkResolutionEveryFrame = config.Bind("Resolutions", "Check Resolution Every Frame", dCheckResolutionEveryFrame, "Checks if the resolution has changed every frame and updates accordingly. May affect performance.");
+            _checkResolutionEveryFrame.SettingChanged += (sender, e) => FCRPlugin.Repatch();
+
             _width = config.Bind("Resolutions", "Width", dWidth, new ConfigDescription(string.Empty, new AcceptableValueRange<int>(10, 3840)));
             _width.SettingChanged += (sender, e) => FCRResPatches.UpdateAll();
 
@@ -86,6 +97,12 @@ namespace Rumi.FixCameraResolutions.Resolutions
                 {
                     RequiresRestart = false,
                     CanModifyCallback = CanModifyAutoSize
+                }));
+
+                LethalConfigManager.AddConfigItem(new BoolCheckBoxConfigItem(config._checkResolutionEveryFrame, new BoolCheckBoxOptions()
+                {
+                    RequiresRestart = false,
+                    CanModifyCallback = CanModifyFrame
                 }));
 
                 LethalConfigManager.AddConfigItem(new IntSliderConfigItem(config._width, new IntSliderOptions()
@@ -113,6 +130,12 @@ namespace Rumi.FixCameraResolutions.Resolutions
             {
                 var result = CanModifyAutoSize();
                 return !result ? result : (!(FCRPlugin.resConfig?.autoSize ?? dAutoSize), "Since auto size is enabled, the size is automatically set to the current game window size.");
+            }
+
+            static CanModifyResult CanModifyFrame()
+            {
+                var result = CanModifyAutoSize();
+                return !result ? result : (FCRPlugin.resConfig?.autoSize ?? dAutoSize, "Auto size is disabled and cannot be modified");
             }
         }
     }

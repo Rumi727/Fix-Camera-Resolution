@@ -1,5 +1,6 @@
 ﻿using GameNetcodeStuff;
 using HarmonyLib;
+using Rumi.FixCameraResolutions.HUD;
 using UnityEngine;
 
 namespace Rumi.FixCameraResolutions.Resolutions
@@ -7,6 +8,9 @@ namespace Rumi.FixCameraResolutions.Resolutions
     public static class FCRResPatches
     {
         public static bool enable => FCRPlugin.resConfig?.enable ?? FCRResConfig.dEnable;
+
+        public static bool autoSize => FCRPlugin.resConfig?.autoSize ?? FCRResConfig.dAutoSize;
+        public static bool checkResolutionEveryFrame => FCRPlugin.hudConfig?.checkResolutionEveryFrame ?? FCRHUDConfig.dCheckResolutionEveryFrame;
 
         /// <summary>
         /// orgWidth
@@ -17,7 +21,7 @@ namespace Rumi.FixCameraResolutions.Resolutions
             {
                 if (enable)
                 {
-                    if (FCRPlugin.resConfig?.autoSize ?? FCRResConfig.dAutoSize)
+                    if (autoSize)
                         return Screen.width;
                     else
                         return FCRPlugin.resConfig?.width ?? FCRResConfig.dWidth;
@@ -33,7 +37,7 @@ namespace Rumi.FixCameraResolutions.Resolutions
             {
                 if (enable)
                 {
-                    if (FCRPlugin.resConfig?.autoSize ?? FCRResConfig.dAutoSize)
+                    if (autoSize)
                         return Screen.height;
                     else
                         return FCRPlugin.resConfig?.height ?? FCRResConfig.dHeight;
@@ -46,31 +50,50 @@ namespace Rumi.FixCameraResolutions.Resolutions
         public const int orgWidth = 860;
         public const int orgHeight = 520;
 
-
-
-        [HarmonyPatch(typeof(Terminal), "Start")]
-        [HarmonyPostfix]
-        static void Terminal_Start_Postfix(Terminal __instance)
+        static class ResPatch
         {
-            UpdateRenderTexture(__instance.playerScreenTex);
-            UpdateRenderTexture(__instance.playerScreenTexHighRes);
+            [HarmonyPatch(typeof(Terminal), "Start")]
+            [HarmonyPostfix]
+            static void Terminal_Start_Postfix(Terminal __instance)
+            {
+                UpdateRenderTexture(__instance.playerScreenTex);
+                UpdateRenderTexture(__instance.playerScreenTexHighRes);
+            }
+
+            //스캔 노드 위치 버그 수정
+            [HarmonyPatch(typeof(HUDManager), "UpdateScanNodes")]
+            [HarmonyPostfix]
+            static void HUDManager_UpdateScanNodes_Postfix(HUDManager __instance)
+            {
+                if (!enable)
+                    return;
+
+                for (int i = 0; i < __instance.scanElements.Length; i++)
+                {
+                    RectTransform scanElement = __instance.scanElements[i];
+
+                    scanElement.anchoredPosition += new Vector2(439.48f, 244.8f);
+                    scanElement.anchoredPosition = scanElement.anchoredPosition.Multiply((float)orgWidth / width, (float)orgHeight / height);
+                    scanElement.anchoredPosition -= new Vector2(439.48f, 244.8f);
+                }
+            }
         }
 
-        //스캔 노드 위치 버그 수정
-        [HarmonyPatch(typeof(HUDManager), "UpdateScanNodes")]
-        [HarmonyPostfix]
-        static void HUDManager_UpdateScanNodes_Postfix(HUDManager __instance)
+        [HarmonyPatch(typeof(HUDManager))]
+        static class UpdatePath
         {
-            if (!enable)
-                return;
-
-            for (int i = 0; i < __instance.scanElements.Length; i++)
+            static int lastScreenWidth;
+            static int lastScreenHeight;
+            [HarmonyPatch("Update"), HarmonyPostfix]
+            static void Update()
             {
-                RectTransform scanElement = __instance.scanElements[i];
+                if (lastScreenWidth != Screen.width || lastScreenHeight != Screen.height)
+                {
+                    UpdateAll();
 
-                scanElement.anchoredPosition += new Vector2(439.48f, 244.8f);
-                scanElement.anchoredPosition = scanElement.anchoredPosition.Multiply((float)orgWidth / width, (float)orgHeight / height);
-                scanElement.anchoredPosition -= new Vector2(439.48f, 244.8f);
+                    lastScreenWidth = Screen.width;
+                    lastScreenHeight = Screen.height;
+                }
             }
         }
 
@@ -99,7 +122,7 @@ namespace Rumi.FixCameraResolutions.Resolutions
             renderTexture.width = width;
             renderTexture.height = height;
 
-            Debug.Log($"Changed the size of the render texture to {renderTexture.width}x{renderTexture.height}");
+            //Debug.Log($"Changed the size of the render texture to {renderTexture.width}x{renderTexture.height}");
         }
 
         public static void UpdateAllPlayerCamera()
@@ -120,7 +143,10 @@ namespace Rumi.FixCameraResolutions.Resolutions
 
             try
             {
-                FCRPlugin.harmony.PatchAll(typeof(FCRResPatches));
+                FCRPlugin.harmony.PatchAll(typeof(ResPatch));
+                if (checkResolutionEveryFrame)
+                    FCRPlugin.harmony.PatchAll(typeof(UpdatePath));
+
                 Debug.Log("Resolution Patched!");
             }
             catch (System.Exception e)
