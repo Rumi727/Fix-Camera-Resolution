@@ -15,7 +15,7 @@ namespace Rumi.FixCameraResolutions
     {
         public const string modGuid = "Rumi.FixCameraResolutions";
         public const string modName = "FixCameraResolutions";
-        public const string modVersion = "1.4.0";
+        public const string modVersion = "1.5.1";
 
         internal static FCRPlugin? instance { get; private set; } = null;
         internal static ManualLogSource? logger { get; private set; } = null;
@@ -82,7 +82,10 @@ namespace Rumi.FixCameraResolutions
                 isRepatchedToCurrentFrame = true;
                 instance.StartCoroutine(RepatchedToCurrentFrame());
             }
+        }
 
+        public static void RepatchImmediate()
+        {
             FCRResPatches.UpdateAll();
             FCRHUDPatches.UpdateHUDManager(HUDManager.Instance);
             FCRHDRPPatches.UpdateAll();
@@ -95,6 +98,8 @@ namespace Rumi.FixCameraResolutions
         static IEnumerator RepatchedToCurrentFrame()
         {
             yield return null;
+
+            RepatchImmediate();
             isRepatchedToCurrentFrame = false;
         }
 

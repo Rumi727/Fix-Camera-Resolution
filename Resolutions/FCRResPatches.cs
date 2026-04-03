@@ -60,8 +60,13 @@ namespace Rumi.FixCameraResolutions.Resolutions
                 UpdateRenderTexture(__instance.playerScreenTexHighRes);
             }
 
+            [HarmonyPatch(typeof(IngamePlayerSettings), nameof(IngamePlayerSettings.SetPixelResolution))]
+            [HarmonyPostfix]
+            static void IngamePlayerSettings_SetPixelResolution_Postfix(IngamePlayerSettings __instance) =>
+                UpdateRenderTexture(__instance.playerGameplayScreenTex);
+
             //스캔 노드 위치 버그 수정
-            [HarmonyPatch(typeof(HUDManager), "UpdateScanNodes")]
+            /*[HarmonyPatch(typeof(HUDManager), "UpdateScanNodes")]
             [HarmonyPostfix]
             static void HUDManager_UpdateScanNodes_Postfix(HUDManager __instance)
             {
@@ -76,7 +81,7 @@ namespace Rumi.FixCameraResolutions.Resolutions
                     scanElement.anchoredPosition = scanElement.anchoredPosition.Multiply((float)orgWidth / width, (float)orgHeight / height);
                     scanElement.anchoredPosition -= new Vector2(439.48f, 244.8f);
                 }
-            }
+            }*/
         }
 
         [HarmonyPatch(typeof(HUDManager))]

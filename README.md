@@ -5,4 +5,4 @@ It can also remove fog and Visor.\
 It can also unlock the UI aspect ratio.\
 Compatible with [LethalConfig](https://github.com/AinaVT/LethalConfig)
 
-Tested on Lethal Company v67
+Tested on Lethal Company v81
