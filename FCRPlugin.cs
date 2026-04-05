@@ -5,8 +5,10 @@ using Rumi.FixCameraResolutions.Fogs;
 using Rumi.FixCameraResolutions.HUD;
 using Rumi.FixCameraResolutions.Resolutions;
 using Rumi.FixCameraResolutions.Visors;
+using RuniOS.LowLevel;
 using System;
 using System.Collections;
+using UnityEngine.LowLevel;
 
 namespace Rumi.FixCameraResolutions
 {
@@ -15,9 +17,9 @@ namespace Rumi.FixCameraResolutions
     {
         public const string modGuid = "Rumi.FixCameraResolutions";
         public const string modName = "FixCameraResolutions";
-        public const string modVersion = "1.5.1";
+        public const string modVersion = "1.5.2";
 
-        internal static FCRPlugin? instance { get; private set; } = null;
+        //internal static FCRPlugin? instance { get; private set; } = null;
         internal static ManualLogSource? logger { get; private set; } = null;
 
         public static FCRResConfig? resConfig { get; private set; }
@@ -30,7 +32,6 @@ namespace Rumi.FixCameraResolutions
         void Awake()
         {
             logger = Logger;
-            instance = this;
 
             Debug.Log("Start loading plugin...");
 
@@ -68,21 +69,24 @@ namespace Rumi.FixCameraResolutions
 
             Patch();
 
+            RuniPlayerLoop.onUpdate += OnRepatchUpdate;
+
             Debug.Log($"Plugin {modName} is loaded!");
         }
 
-        static bool isRepatchedToCurrentFrame = false;
-        public static void Repatch()
+        static void OnRepatchUpdate()
         {
-            if (isRepatchedToCurrentFrame)
+            if (repatchFrame <= 0)
                 return;
 
-            if (instance != null)
-            {
-                isRepatchedToCurrentFrame = true;
-                instance.StartCoroutine(RepatchedToCurrentFrame());
-            }
+            repatchFrame--;
+
+            if (repatchFrame == 0)
+                RepatchImmediate();
         }
+
+        static int repatchFrame = 0;
+        public static void Repatch() => repatchFrame = 1;
 
         public static void RepatchImmediate()
         {
@@ -93,14 +97,6 @@ namespace Rumi.FixCameraResolutions
 
             Unpatch();
             Patch();
-        }
-
-        static IEnumerator RepatchedToCurrentFrame()
-        {
-            yield return null;
-
-            RepatchImmediate();
-            isRepatchedToCurrentFrame = false;
         }
 
         static void Patch()
