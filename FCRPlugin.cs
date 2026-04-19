@@ -17,7 +17,7 @@ namespace Rumi.FixCameraResolutions
     {
         public const string modGuid = "Rumi.FixCameraResolutions";
         public const string modName = "FixCameraResolutions";
-        public const string modVersion = "1.5.2";
+        public const string modVersion = "1.5.3";
 
         //internal static FCRPlugin? instance { get; private set; } = null;
         internal static ManualLogSource? logger { get; private set; } = null;
